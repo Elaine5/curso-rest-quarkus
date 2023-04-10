@@ -33,4 +33,12 @@ public class UserResource {
         PanacheQuery<User> query = User.findAll();
         return Response.ok(query.list()).build();
     }
+
+    public Response deleteUser(){
+        return Response.ok().build();
+    }
+
+    public Response updateUser(){
+        return Response.ok().build();
+    }
 }
