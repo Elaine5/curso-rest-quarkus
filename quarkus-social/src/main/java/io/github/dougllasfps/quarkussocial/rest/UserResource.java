@@ -34,11 +34,22 @@ public class UserResource {
         return Response.ok(query.list()).build();
     }
 
-    public Response deleteUser(){
-        return Response.ok().build();
+    @DELETE
+    @Path("{id}")
+    @Transactional
+    public Response deleteUser( @PathParam("id") Long id ){
+        PanacheEntityBase user = User.findById(id);
+
+        if(user != null){
+            user.delete();
+            return Response.ok().build();
+        }
+        return Response.status(Response.Status.NOT_FOUND).build();
+
     }
 
-    public Response updateUser(){
+    @PUT
+    public Response updateUser( @PathParam("id") Long id, CreateUserRequest userData){
         return Response.ok().build();
     }
 }
