@@ -4,6 +4,7 @@ package io.github.dougllasfps.quarkussocial.rest;
 import io.github.dougllasfps.quarkussocial.domain.model.User;
 import io.github.dougllasfps.quarkussocial.domain.repository.UserRepository;
 import io.github.dougllasfps.quarkussocial.rest.dto.CreateUserRequest;
+import io.github.dougllasfps.quarkussocial.rest.dto.ResponseError;
 import io.quarkus.hibernate.orm.panache.PanacheEntityBase;
 import io.quarkus.hibernate.orm.panache.PanacheQuery;
 import io.quarkus.hibernate.validator.runtime.jaxrs.ViolationReport;
@@ -38,9 +39,8 @@ public class UserResource {
 
         Set<ConstraintViolation<CreateUserRequest>> violations = validator.validate(userRequest);
         if (!violations.isEmpty()){
-            ConstraintViolation<CreateUserRequest> erro = violations.stream().findAny().get();
-            String errorMessage = erro.getMessage();
-            return Response.status(400).entity(errorMessage).build();
+            ResponseError responseError = ResponseError.createFromValidation(violations);
+            return Response.status(400).entity(responseError).build();
         }
 
         User user = new User();
