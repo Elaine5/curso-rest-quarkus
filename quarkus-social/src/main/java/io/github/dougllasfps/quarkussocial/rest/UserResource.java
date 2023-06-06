@@ -49,7 +49,10 @@ public class UserResource {
 
         repository.persist(user);
 
-        return Response.ok(user).build();
+        return Response
+                .status(Response.Status.CREATED.getStatusCode())
+                .entity(user)
+                .build();
     }
 
     @GET
