@@ -1,10 +1,14 @@
 package io.github.dougllasfps.quarkussocial.rest;
 
+import io.github.dougllasfps.quarkussocial.domain.model.Post;
 import io.github.dougllasfps.quarkussocial.domain.model.User;
+import io.github.dougllasfps.quarkussocial.domain.repository.PostRepository;
 import io.github.dougllasfps.quarkussocial.domain.repository.UserRepository;
+import io.github.dougllasfps.quarkussocial.rest.dto.CreatePostRequest;
 
 import javax.annotation.Resource;
 import javax.inject.Inject;
+import javax.transaction.Transactional;
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
@@ -15,18 +19,29 @@ import javax.ws.rs.core.Response;
 public class PostResource {
 
     private UserRepository userRepository;
+    private PostRepository repository;
 
     @Inject
-    public PostResource(UserRepository userRepository) {
+    public PostResource(UserRepository userRepository, PostRepository repository) {
         this.userRepository = userRepository;
     }
 
     @POST
-    public Response savePost( @PathParam("userId") Long userId ){
+    @Transactional // para fazer alterção na base é necessario esta anotação
+    public Response savePost(
+            @PathParam("userId") Long userId, CreatePostRequest request){
+
         User user = userRepository.findById(userId);
         if (user == null){
             return Response.status(Response.Status.NOT_FOUND).build();
         }
+
+        Post post = new Post();
+        post.setText(request.getText());
+        post.setUser(user);
+
+        repository.persist(post);
+
         return Response.status(Response.Status.CREATED).build();
     }
 
