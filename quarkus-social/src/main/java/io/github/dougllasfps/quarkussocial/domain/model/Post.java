@@ -18,7 +18,7 @@ public class Post {
     private String text;
 
     @Column(name = "dateTime")
-    private LocalDateTime dataTime;
+    private LocalDateTime dateTime;
 
     @ManyToOne //por ter chave estrangeira, quer dizer também que teremos muitas postagens para um unico usuário
     @JoinColumn(name = "user_id")
