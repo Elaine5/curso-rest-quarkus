@@ -5,9 +5,7 @@ import io.github.dougllasfps.quarkussocial.domain.model.User;
 import io.github.dougllasfps.quarkussocial.domain.repository.UserRepository;
 import io.github.dougllasfps.quarkussocial.rest.dto.CreateUserRequest;
 import io.github.dougllasfps.quarkussocial.rest.dto.ResponseError;
-import io.quarkus.hibernate.orm.panache.PanacheEntityBase;
 import io.quarkus.hibernate.orm.panache.PanacheQuery;
-import io.quarkus.hibernate.validator.runtime.jaxrs.ViolationReport;
 
 import javax.inject.Inject;
 import javax.transaction.Transactional;
