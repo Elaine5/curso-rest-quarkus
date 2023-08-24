@@ -5,15 +5,15 @@ import io.github.dougllasfps.quarkussocial.domain.model.User;
 import io.github.dougllasfps.quarkussocial.domain.repository.PostRepository;
 import io.github.dougllasfps.quarkussocial.domain.repository.UserRepository;
 import io.github.dougllasfps.quarkussocial.rest.dto.CreatePostRequest;
-import io.quarkus.hibernate.orm.panache.PanacheQuery;
+import io.github.dougllasfps.quarkussocial.rest.dto.PostResponse;
+import io.quarkus.panache.common.Sort;
 
-import javax.annotation.Resource;
 import javax.inject.Inject;
 import javax.transaction.Transactional;
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
-import java.time.LocalDateTime;
+import java.util.stream.Collectors;
 
 @Path("/users/{userId}/posts")
 @Consumes(MediaType.APPLICATION_JSON)
@@ -55,10 +55,17 @@ public class PostResource {
             return Response.status(Response.Status.NOT_FOUND).build();
         }
 
-        var query = repository.find("user", user);
+        var query = repository.find("user", Sort.by("dateTime",
+                Sort.Direction.Descending), user);
         var list = query.list();
 
-        return Response.ok(list).build();
+        // está forma de código foi escrita para ao listar os dados, apenas venha os dados do text e do dateTime
+        var postResponseList = list.stream()
+                //.map(post -> PostResponse.fromEntity(post)) // segunda forma que pode ser escrita
+                .map(PostResponse::fromEntity) // forma escrita significa método de referencia
+                .collect(Collectors.toList());
+
+        return Response.ok(postResponseList).build();
     }
 
 }
