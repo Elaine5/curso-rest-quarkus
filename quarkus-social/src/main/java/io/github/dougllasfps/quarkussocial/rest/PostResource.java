@@ -5,6 +5,7 @@ import io.github.dougllasfps.quarkussocial.domain.model.User;
 import io.github.dougllasfps.quarkussocial.domain.repository.PostRepository;
 import io.github.dougllasfps.quarkussocial.domain.repository.UserRepository;
 import io.github.dougllasfps.quarkussocial.rest.dto.CreatePostRequest;
+import io.quarkus.hibernate.orm.panache.PanacheQuery;
 
 import javax.annotation.Resource;
 import javax.inject.Inject;
@@ -12,6 +13,7 @@ import javax.transaction.Transactional;
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import java.time.LocalDateTime;
 
 @Path("/users/{userId}/posts")
 @Consumes(MediaType.APPLICATION_JSON)
@@ -24,6 +26,7 @@ public class PostResource {
     @Inject
     public PostResource(UserRepository userRepository, PostRepository repository) {
         this.userRepository = userRepository;
+        this.repository = repository;
     }
 
     @POST
@@ -52,7 +55,10 @@ public class PostResource {
             return Response.status(Response.Status.NOT_FOUND).build();
         }
 
-        return Response.ok().build();
+        var query = repository.find("user", user);
+        var list = query.list();
+
+        return Response.ok(list).build();
     }
 
 }
