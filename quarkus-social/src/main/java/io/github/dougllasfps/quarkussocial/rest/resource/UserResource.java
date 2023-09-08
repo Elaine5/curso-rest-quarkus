@@ -1,4 +1,4 @@
-package io.github.dougllasfps.quarkussocial.rest;
+package io.github.dougllasfps.quarkussocial.rest.resource;
 
 
 import io.github.dougllasfps.quarkussocial.domain.model.User;
