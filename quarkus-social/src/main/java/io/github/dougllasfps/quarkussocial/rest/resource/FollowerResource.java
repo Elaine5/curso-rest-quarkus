@@ -37,13 +37,16 @@ public class FollowerResource {
 
         var follower = userRepository.findById(request.getFollowerId());
 
-//        boolean follows = repository.follows(follower, user);
+        boolean follows = repository.follows(follower, user);
 
-        var entity = new Follower();
-        entity.setUser(user);
-        entity.setFollower(follower);
+        if (!follows) {
+            var entity = new Follower();
+            entity.setUser(user);
+            entity.setFollower(follower);
 
-        repository.persist(entity);
+            repository.persist(entity);
+
+        }
 
         return Response.status(Response.Status.NO_CONTENT).build();
     }
