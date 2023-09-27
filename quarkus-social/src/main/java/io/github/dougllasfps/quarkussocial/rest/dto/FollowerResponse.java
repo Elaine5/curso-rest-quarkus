@@ -1,7 +1,6 @@
 package io.github.dougllasfps.quarkussocial.rest.dto;
 
 import io.github.dougllasfps.quarkussocial.domain.model.Follower;
-import io.github.dougllasfps.quarkussocial.rest.resource.FollowerResource;
 import lombok.Data;
 
 @Data
