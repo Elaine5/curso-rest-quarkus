@@ -2,6 +2,7 @@ package io.github.dougllasfps.quarkussocial.rest.resource;
 
 import io.github.dougllasfps.quarkussocial.domain.model.Post;
 import io.github.dougllasfps.quarkussocial.domain.model.User;
+import io.github.dougllasfps.quarkussocial.domain.repository.FollowerRepository;
 import io.github.dougllasfps.quarkussocial.domain.repository.PostRepository;
 import io.github.dougllasfps.quarkussocial.domain.repository.UserRepository;
 import io.github.dougllasfps.quarkussocial.rest.dto.CreatePostRequest;
@@ -20,22 +21,26 @@ import java.util.stream.Collectors;
 @Produces(MediaType.APPLICATION_JSON)
 public class PostResource {
 
+    private FollowerRepository followerRepository;
     private UserRepository userRepository;
     private PostRepository repository;
 
     @Inject
-    public PostResource(UserRepository userRepository, PostRepository repository) {
+    public PostResource(UserRepository userRepository,
+                        PostRepository repository,
+                        FollowerRepository followerRepository) {
         this.userRepository = userRepository;
         this.repository = repository;
+        this.followerRepository = followerRepository;
     }
 
     @POST
     @Transactional // para fazer alterção na base é necessario esta anotação
     public Response savePost(
-            @PathParam("userId") Long userId, CreatePostRequest request){
+            @PathParam("userId") Long userId, CreatePostRequest request) {
 
         User user = userRepository.findById(userId);
-        if (user == null){
+        if (user == null) {
             return Response.status(Response.Status.NOT_FOUND).build();
         }
 
@@ -49,10 +54,32 @@ public class PostResource {
     }
 
     @GET
-    public Response listPosts( @PathParam("userId") Long userId ){
+    public Response listPosts(@PathParam("userId") Long userId,
+                              @HeaderParam("followerId") Long followerId) {
         User user = userRepository.findById(userId);
-        if (user == null){
+        if (user == null) {
             return Response.status(Response.Status.NOT_FOUND).build();
+        }
+
+        if (followerId == null) {
+            return Response.status(Response.Status.BAD_REQUEST)
+                    .entity("You forgot the followerId")
+                    .build();
+        }
+
+        User follower = userRepository.findById(followerId);
+
+        if(follower == null){
+            return Response.status(Response.Status.BAD_REQUEST)
+                    .entity("Inexistent followerId")
+                    .build();
+        }
+
+        boolean follows = followerRepository.follows(follower, user);
+        if (!follows) {
+            return Response.status(Response.Status.FORBIDDEN)
+                    .entity("You can't see these posts")
+                    .build();
         }
 
         var query = repository.find("user", Sort.by("dateTime",
